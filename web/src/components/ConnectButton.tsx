@@ -1,7 +1,7 @@
-export default function ConnectButton() {
+export function ConnectButton() {
   return (
-    <div>
-      <button>Connect wallet</button>
-    </div>
+    <>
+      <w3m-button />
+    </>
   );
 }
