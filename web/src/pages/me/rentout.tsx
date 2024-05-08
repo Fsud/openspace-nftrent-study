@@ -14,6 +14,8 @@ import { useAccount } from "wagmi";
 import { signTypedData, getAccount } from "@wagmi/core";
 import { config, eip721Types, PROTOCOL_CONFIG, wagmiConfig } from "@/config";
 import { parseUnits } from "viem";
+const { connector } = getAccount(config)
+
 
 export default function Rentout() {
   const nftResp = useUserNFTs();
@@ -78,14 +80,29 @@ export default function Rentout() {
         min_collateral: parseUnits(collateralRef.current!.value, 18),
         list_endtime: BigInt(
           Math.ceil(Date.now() / 1000) +
-            Number(listLifetimeRef.current!.value) * oneday
+          Number(listLifetimeRef.current!.value) * oneday
         ),
       } as RentoutOrderMsg;
 
       console.log("info:", chainId, PROTOCOL_CONFIG[chainId!].domain);
 
-      // TODO 请求钱包签名，获得签名信息
-      const signature = "0x0000...0000";
+      // TODOF 请求钱包签名，获得签名信息
+      const signature = await signTypedData(wagmiConfig, {
+        connector,
+        domain: PROTOCOL_CONFIG[chainId!].domain,
+        types: eip721Types,
+        primaryType: 'RentoutOrder',
+        message: {
+          maker: order.maker,
+          nft_ca: order.nft_ca,
+          token_id: order.token_id,
+          daily_rent: order.daily_rent,
+          max_rental_duration: order.max_rental_duration,
+          min_collateral: order.min_collateral,
+          list_endtime: order.list_endtime,
+        },
+      })
+
 
       console.log("signature", signature);
 
@@ -278,8 +295,8 @@ export default function Rentout() {
                       >
                         {(approveHelp.isPending ||
                           approveHelp.isConfirming) && (
-                          <span className="loading loading-ring loading-sm"></span>
-                        )}
+                            <span className="loading loading-ring loading-sm"></span>
+                          )}
                         Approve first
                       </button>
                     )}

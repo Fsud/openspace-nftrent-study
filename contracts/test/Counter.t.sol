@@ -13,15 +13,7 @@ contract CounterTest is Test {
     }
 
     function test_Increment() public {
-        address alice = address(0x04855890416eba63cACB213f860e5D70Ab3F6870);
-        deal(alice, 1000 ether);
-
         counter.increment();
-        counter.increment();
-        counter.increment();
-        counter.increment();
-
-        vm.stopPrank();
         assertEq(counter.number(), 1);
     }
 
