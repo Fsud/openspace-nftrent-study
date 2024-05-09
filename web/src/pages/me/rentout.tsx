@@ -12,7 +12,7 @@ import { useUserNFTs, useWriteApproveTx } from "@/lib/fetch";
 import { useAccount } from "wagmi";
 
 import { signTypedData, getAccount } from "@wagmi/core";
-import { config, eip721Types, PROTOCOL_CONFIG, wagmiConfig } from "@/config";
+import { eip721Types, PROTOCOL_CONFIG, wagmiConfig } from "@/config";
 import { parseUnits } from "viem";
 
 
