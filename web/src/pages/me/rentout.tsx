@@ -14,13 +14,14 @@ import { useAccount } from "wagmi";
 import { signTypedData, getAccount } from "@wagmi/core";
 import { config, eip721Types, PROTOCOL_CONFIG, wagmiConfig } from "@/config";
 import { parseUnits } from "viem";
-const { connector } = getAccount(config)
+
 
 
 export default function Rentout() {
   const nftResp = useUserNFTs();
-  console.log("nftResp:", nftResp);
   const { address: userWallet, chainId } = useAccount();
+  const { connector } = getAccount(wagmiConfig);
+
 
   const [selectedNft, setSelectedNft] = useState<NFTInfo | null>(null);
   const [step, setStep] = useState(1);
@@ -88,13 +89,13 @@ export default function Rentout() {
       console.log("info:", chainId, PROTOCOL_CONFIG[chainId!].domain);
 
       // TODOF 请求钱包签名，获得签名信息
-      const signature = await signTypedData(config, {
+      const signature = await signTypedData(wagmiConfig, {
         connector,
         domain: PROTOCOL_CONFIG[chainId!].domain,
         types: eip721Types,
-        primaryType: 'RentoutOrder',
+        primaryType: "RentoutOrder",
         message: order,
-      })
+      });
 
 
       console.log("signature", signature);

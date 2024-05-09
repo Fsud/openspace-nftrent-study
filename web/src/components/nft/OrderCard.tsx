@@ -4,7 +4,7 @@ import _ from "lodash";
 import { LOADIG_IMG_URL, DEFAULT_NFT_IMG_URL, PROTOCOL_CONFIG } from "@/config";
 import { useEffect, useState } from "react";
 import { NFTInfo, RentoutOrderEntry, RentoutOrderMsg } from "@/types";
-import { useFetchNFTMetadata } from "@/lib/fetch";
+import { useFetchNFTMetadata, useMarketContract } from "@/lib/fetch";
 import { formatUnits, Address } from "viem";
 
 import { marketABI } from "../../lib/abi";
@@ -44,28 +44,38 @@ export default function OrderCard(props: { order: RentoutOrderEntry }) {
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });
 
-  // const RentoutOrder = {
-  //   maker: order.maker as Address, // 租户地址
-  //   nft_ca: order.nft_ca as Address, // NFT合约地址
-  //   token_id: order.token_id,// NFT tokenId
-  //   daily_rent: order.daily_rent, // 每日租金
-  //   max_rental_duration: order.max_rental_duration, // 最大租赁时长
-  //   min_collateral: order.min_collateral,// 最小抵押
-  //   list_endtime: order.list_endtime // 挂单结束时间
-  // };
+  const RentoutOrder = {
+    maker: order.maker as Address, // 租户地址
+    nft_ca: order.nft_ca as Address, // NFT合约地址
+    token_id: order.token_id,// NFT tokenId
+    daily_rent: order.daily_rent, // 每日租金
+    max_rental_duration: order.max_rental_duration, // 最大租赁时长
+    min_collateral: order.min_collateral,// 最小抵押
+    list_endtime: order.list_endtime // 挂单结束时间
+  };
 
-  const { maker, nft_ca, token_id, daily_rent, max_rental_duration, min_collateral, list_endtime } = order
+  const market = useMarketContract();
 
 
-  const handleOpen = (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleOpen = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
+    const {
+      maker,
+      nft_ca,
+      token_id,
+      daily_rent,
+      max_rental_duration,
+      min_collateral,
+      list_endtime,
+      signature,
+    } = order
 
     //TODOF: 写合约，执行Borrow 交易
     writeContract({
-      abi: marketABI,
-      address: PROTOCOL_CONFIG[chainId!].rentoutMarket,
+      ...market!,
+      args: [RentoutOrder, signature as Address],
       functionName: 'borrow',
-      args: [{ maker, nft_ca, token_id, daily_rent, max_rental_duration, min_collateral, list_endtime }, order.signature],
       value: order.min_collateral
     });
   };

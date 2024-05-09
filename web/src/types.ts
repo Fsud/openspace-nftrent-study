@@ -11,7 +11,7 @@ export interface NFTInfo {
 /*
  * @description: NFT出租信息
  */
-export interface RentoutOrderMsg {
+export interface RentoutOrderMsg extends Record<string, unknown> {
   maker: string; // 租户地址
   nft_ca: string; // NFT合约地址
   token_id: bigint; // NFT tokenId
