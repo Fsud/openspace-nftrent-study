@@ -56,13 +56,13 @@ export const PROTOCOL_CONFIG = {
   [Number(sepolia.id)]: {
     domain: {
       // TODOF: 配置EIP-712签名域名信息
-      name: 'nftrent',
+      name: 'rentnft',
       version: '1',
       chainId: 11155111,
-      verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
-  
+      verifyingContract: '0xb2cA1a4869669998d7287162786Da292503b1807',
+
     },
-    rentoutMarket: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC", // TODOF: 配置出租市场合约地址
+    rentoutMarket: "0xb2cA1a4869669998d7287162786Da292503b1807", // TODOF: 配置出租市场合约地址
   },
 } as const;
 
@@ -72,7 +72,7 @@ export const eip721Types = {
   RentoutOrder: [
     // TODOF: 定义出租订单结构数据
     { name: "maker", type: "address" },
-    { name: "nft_ca", type: "string" },
+    { name: "nft_ca", type: "address" },
     { name: "token_id", type: "uint256" },
     { name: "daily_rent", type: "uint256" },
     { name: "max_rental_duration", type: "uint256" },

@@ -19,6 +19,7 @@ const { connector } = getAccount(config)
 
 export default function Rentout() {
   const nftResp = useUserNFTs();
+  console.log("nftResp:", nftResp);
   const { address: userWallet, chainId } = useAccount();
 
   const [selectedNft, setSelectedNft] = useState<NFTInfo | null>(null);
@@ -87,20 +88,12 @@ export default function Rentout() {
       console.log("info:", chainId, PROTOCOL_CONFIG[chainId!].domain);
 
       // TODOF 请求钱包签名，获得签名信息
-      const signature = await signTypedData(wagmiConfig, {
+      const signature = await signTypedData(config, {
         connector,
         domain: PROTOCOL_CONFIG[chainId!].domain,
         types: eip721Types,
         primaryType: 'RentoutOrder',
-        message: {
-          maker: order.maker,
-          nft_ca: order.nft_ca,
-          token_id: order.token_id,
-          daily_rent: order.daily_rent,
-          max_rental_duration: order.max_rental_duration,
-          min_collateral: order.min_collateral,
-          list_endtime: order.list_endtime,
-        },
+        message: order,
       })
 
 

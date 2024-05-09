@@ -10,6 +10,7 @@ export default async function handler(
 ) {
   try {
     // 初始化DB
+    console.log("init db");
     const { pwd } = req.query;
     if (pwd !== ADMIN_PWD) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -21,7 +22,7 @@ export default async function handler(
     const result = await sql`CREATE TABLE IF NOT EXISTS rentout_orders (
         id SERIAL PRIMARY KEY,
         chain_id INTEGER NOT NULL,
-        taker TEXT,
+        maker TEXT,
         nft_ca TEXT,
         token_url TEXT,
         token_name TEXT,
@@ -46,17 +47,21 @@ export async function saveOrder(
   nft: NFTInfo,
   signature: string
 ) {
-  // TODO: 验证提交的订单信息是否合法
+  // TODO?: 验证提交的订单信息是否合法
+  if (order.list_endtime < Date.now() / 1000) {
+    throw new Error("Invalid list_endtime");
+  }
+
+
+
   // 先删除已存在的记录
-  await sql`delete from rentout_orders where chain_id = ${chainId} and nft_ca = ${
-    order.nft_ca
-  } and token_id = ${order.token_id.toString()}`;
+  await sql`delete from rentout_orders where chain_id = ${chainId} and nft_ca = ${order.nft_ca
+    } and token_id = ${order.token_id.toString()}`;
 
   // 插入新记录
   return sql`insert into rentout_orders (chain_id, maker, nft_ca, token_id, max_rental_duration, daily_rent, min_collateral, list_endtime,token_url,token_name,signature) 
-   values (${chainId}, ${order.maker}, ${
-    order.nft_ca
-  }, ${order.token_id.toString()}, 
+   values (${chainId}, ${order.maker}, ${order.nft_ca
+    }, ${order.token_id.toString()}, 
     ${order.max_rental_duration.toString()}, 
     ${order.daily_rent.toString()}, 
     ${order.min_collateral.toString()},

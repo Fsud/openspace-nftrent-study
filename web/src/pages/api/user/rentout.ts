@@ -37,25 +37,17 @@ export default async function handler(
 // 校验出租订单签名 https://wagmi.sh/core/api/actions/verifyTypedData#message
 function verifyingOrder(
   chainId: any,
-  order: RentoutOrderMsg,
+  order: any,
   signature: any
 ): Promise<boolean> {
   // TODOF: 验证订单签名
   const result = verifyTypedData(wagmiConfig, {
-    domain: PROTOCOL_CONFIG[11155111].domain,
-    eip721Types,
-    message: {
-      maker: order.maker,
-      nft_ca: order.nft_ca,
-      token_id: order.token_id,
-      daily_rent: order.daily_rent,
-      max_rental_duration: order.max_rental_duration,
-      min_collateral: order.min_collateral,
-      list_endtime: order.list_endtime,
-    },
+    domain: PROTOCOL_CONFIG[chainId].domain,
+    types: eip721Types,
+    message: order,
     primaryType: 'RentoutOrder',
     address: order.maker,
-    signature: signature,
+    signature
   })
   return result as any;
 }

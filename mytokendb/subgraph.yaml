@@ -8,7 +8,7 @@ dataSources:
     name: MT
     network: sepolia
     source:
-      address: "0x190873386803Db026fd185936Dbf2A6E81457810"
+      address: "0xb2cA1a4869669998d7287162786Da292503b1807"
       abi: MT
       startBlock: 5789746
     mapping:
@@ -31,7 +31,7 @@ dataSources:
     name: ZK01
     network: sepolia
     source:
-      address: "0x0a5B53232685B8291255C3EA2e6D30987143F2e8"
+      address: "0x037bF315FDF5276BC5D43fc2bB121Fa60F50bc9c"
       abi: MT
       startBlock: 5781163
     mapping:

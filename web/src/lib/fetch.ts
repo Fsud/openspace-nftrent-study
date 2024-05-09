@@ -50,7 +50,7 @@ export function useUserNFTs(): NFTBalanceResponse {
   const { data: result, error } = useSWR(
     isConnected
       ? {
-          query: gql`
+        query: gql`
             query userNFTs($wallet: Bytes!) {
               tokenInfos(where: { owner: $wallet }) {
                 id
@@ -63,15 +63,16 @@ export function useUserNFTs(): NFTBalanceResponse {
               }
             }
           `,
-          variables: {
-            wallet: address!.toLowerCase(),
-          },
-        }
+        variables: {
+          wallet: address!.toLowerCase(),
+        },
+      }
       : null,
     (req: GQL) =>
       request<queryResponse>(RENFT_GRAPHQL_URL!, req.query, req.variables)
   );
-
+  console.log("isConnected", isConnected);
+  console.log("rrrresult?.tokenInfos:", result?.tokenInfos);
   // 尚未登录时，返回空数据
   return {
     data: result?.tokenInfos,
@@ -184,7 +185,15 @@ export function useWriteApproveTx(nft: NFTInfo | null) {
   // 或者检查是否有整个集合授权给MKT合约
   var approveTo = undefined;
 
-  // TODO 查询NFT是否已经授权给市场合约
+  // TODOF 查询NFT是否已经授权给市场合约
+  const result = useReadContract({
+    abi: ERC721ABI,
+    address: nft?.ca as Address,
+    functionName: 'getApproved',
+    args: [nft?.tokenId],
+  })
+
+  approveTo = result.data;
 
   return {
     hash,
@@ -194,8 +203,14 @@ export function useWriteApproveTx(nft: NFTInfo | null) {
     isConfirmed,
     isApproved: approveTo === mkt?.address,
     sendTx: () => {
-      // TODO 写合约：调用NFT合约，将 NFT 授权给市场合约
+      // TODOF 写合约：调用NFT合约，将 NFT 授权给市场合约
       // https://wagmi.sh/react/guides/write-to-contract#_4-hook-up-the-usewritecontract-hook
+      writeContract({
+        abi: ERC721ABI,
+        address: nft?.ca as Address,
+        functionName: 'approve',
+        args: [mkt?.address, nft?.tokenId],
+      });
     },
   };
 }
@@ -204,8 +219,8 @@ export function useMarketContract() {
   const { chainId } = useAccount();
   return chainId
     ? {
-        address: PROTOCOL_CONFIG[chainId].rentoutMarket,
-        abi: marketABI,
-      }
+      address: PROTOCOL_CONFIG[chainId].rentoutMarket,
+      abi: marketABI,
+    }
     : undefined;
 }
